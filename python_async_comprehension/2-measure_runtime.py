@@ -9,7 +9,7 @@ async_comprehension = importlib.import_module(
     '1-async_comprehension').async_comprehension
 
 
-async def measure_runtime():
+async def measure_runtime() -> float:
     """Mesure le temps d'exécution de 4 compréhensions asynchrones
     en parallèle.
 

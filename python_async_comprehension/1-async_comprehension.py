@@ -3,11 +3,12 @@
 valeurs d'un générateur asynchrone."""
 
 import importlib
+from typing import List
 
 async_generator = importlib.import_module('0-async_generator').async_generator
 
 
-async def async_comprehension():
+async def async_comprehension()-> List[float]:
     """Collecte toutes les valeurs produites par async_generator dans
     une liste.
 
