@@ -46,9 +46,9 @@ class Server:
         """
         assert index is not None and index >= 0
         indexed_dataset = self.indexed_dataset()
-        max_index = max(indexed_dataset.keys())
         data = []
         current = index
+        max_index = max(indexed_dataset)
         while len(data) < page_size and current <= max_index:
             if current in indexed_dataset:
                 data.append(indexed_dataset[current])
