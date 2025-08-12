@@ -2,6 +2,8 @@
 """
 10-update_topics.py
 """
+
+
 def update_topics(mongo_collection, name, topics):
     """
     Updates the topics of a school document based on the name.
