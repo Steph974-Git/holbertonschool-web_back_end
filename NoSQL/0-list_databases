@@ -1,2 +1,2 @@
 // Affiche la liste des bases de données MongoDB
-show
+show dbs
