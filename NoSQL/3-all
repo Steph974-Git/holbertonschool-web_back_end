@@ -1,1 +1,2 @@
+// Display all documents in the school collection in a readable format
 db.school.find().pretty()

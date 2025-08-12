@@ -1,1 +1,2 @@
+// Utilise ou crée la base de données my_db
 use my_db
