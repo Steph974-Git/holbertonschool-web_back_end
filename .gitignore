@@ -1,0 +1,5 @@
+node_modules/
+__pycache__/
+.vscode/
+Node_JS_basic/package-lock.json
+nodesource_setup.sh
