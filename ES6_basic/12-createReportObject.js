@@ -1,3 +1,3 @@
-export default function createReportObject(employeesList) {
+export default function createReportObject (employeesList) {
 
 }
