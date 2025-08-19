@@ -19,6 +19,10 @@ export default class Pricing {
   get currency() {
     return this._currency;
   }
+  static convertPrice(amount, conversionRate) {
+  return amount * conversionRate;
+}
+
   set amount(newAmount) {
     if (typeof newAmount !== 'number') {
       throw new TypeError('Number must be a string');
