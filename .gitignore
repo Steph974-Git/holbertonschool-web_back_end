@@ -3,3 +3,4 @@ __pycache__/
 .vscode/
 Node_JS_basic/package-lock.json
 nodesource_setup.sh
+eslint.config.mjs
