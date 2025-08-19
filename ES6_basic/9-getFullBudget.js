@@ -1,13 +1,14 @@
 import getBudgetObject from './7-getBudgetObject.js';
 
+
 export default function getFullBudgetObject (income, gdp, capita) {
   return {
     ...getBudgetObject(income, gdp, capita),
-    getIncomeInDollars (amount) {
-      return `$${amount}`;
+    getIncomeInDollars(income) {
+      return `$${income}`;
     },
-    getIncomeInEuros (amount) {
-      return `${amount} euros`;
+    getIncomeInEuros(income) {
+      return `${income} euros`;
     }
   };
 }
