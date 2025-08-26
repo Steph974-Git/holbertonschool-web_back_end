@@ -1,9 +1,8 @@
 export default function cleanSet(set, startString) {
-  if (typeof startString !== 'string')
+  if (startString === '')
     return "";
-  const Barray = Array.from(set)
-
-  set.startsWith("bon");
-  set.slice(3);
-
+  return [...set]
+    .filter(value => value.startsWith(startString))
+    .map(value => value.slice(startString.length))
+    .join('-');
 }
