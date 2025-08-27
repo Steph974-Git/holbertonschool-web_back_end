@@ -4,7 +4,7 @@ import uploadPhoto from './5-photo-reject.js';
 export default function handleProfileSignup(firstName, lastName, fileName) {
   const promises = [
     signUpUser(firstName, lastName),
-    uploadPhoto(fileName)
+    uploadPhoto(fileName),
   ];
   
   return Promise.allSettled(promises)
@@ -13,7 +13,7 @@ export default function handleProfileSignup(firstName, lastName, fileName) {
         if (result.status === 'fulfilled') {
           return { status: result.status, value: result.value };
         } else {
-          return { status: result.status, value: result.reason };
+          return { status: result.status, value: result.reason.toString()};
         }
       });
     });
