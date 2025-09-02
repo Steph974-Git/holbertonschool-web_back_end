@@ -1,12 +1,11 @@
-import { readFileSync } from 'fs';
+const fs = require('fs');
 
-const countStudents = (path) => {
+function countStudents(path) {
   try {
-    const data = readFileSync(path, 'utf-8');
+    const data = fs.readFileSync(path, "utf-8");
     
     // Filtrer les lignes vides et extraire les données
-    const rows = data
-      .split(/\r?\n/)
+    const rows = data.split(/\r?\n/)
       .filter(line => line.trim())
       .slice(1) // Enlever le header
       .map(row => row.split(','))
@@ -17,7 +16,7 @@ const countStudents = (path) => {
       const firstname = parts[0].trim();
       const field = parts[parts.length - 1].trim();
       
-      acc[field] ??= []; // Opérateur nullish assignment
+      acc[field] = acc[field] || [];
       acc[field].push(firstname);
       return acc;
     }, {});
@@ -32,8 +31,8 @@ const countStudents = (path) => {
     });
     
   } catch (err) {
-    throw new Error('Cannot load the database');
+    throw new Error("Cannot load the database");
   }
-};
+}
 
-export default countStudents;
+module.exports = countStudents;
