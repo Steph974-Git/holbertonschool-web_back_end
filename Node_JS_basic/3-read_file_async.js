@@ -20,6 +20,15 @@ async function countStudents(path) {
       studentsByField[field].push(firstname);
     });
 
+    // Affichage dans la console (pour 3-main_1.js)
+    console.log(`Number of students: ${students.length}`);
+
+    for (const fieldName in studentsByField) {
+      const names = studentsByField[fieldName].join(', ');
+      console.log(`Number of students in ${fieldName}: ${studentsByField[fieldName].length}. List: ${names}`);
+    }
+
+    // Construction du résultat pour le retour (pour 5-http.js)
     let result = `Number of students: ${students.length}`;
 
     for (const fieldName in studentsByField) {
