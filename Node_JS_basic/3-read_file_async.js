@@ -42,10 +42,10 @@ async function countStudents(path) {
     const total = Object.values(groups).reduce((acc, list) => acc + list.length, 0);
     console.log(`Number of students: ${total}`);
 
-    Object.keys(groups).sort().forEach((field) => {
+    for (const field of Object.keys(groups).sort()) {
       const list = groups[field];
       console.log(`Number of students in ${field}: ${list.length}. List: ${list.join(', ')}`);
-    });
+    }
   } catch (err) {
     throw new Error('Cannot load the database');
   }
