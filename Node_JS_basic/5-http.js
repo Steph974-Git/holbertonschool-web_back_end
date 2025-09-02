@@ -22,9 +22,9 @@ const app = http.createServer(async (req, res) => {
       
       console.log = originalLog;
       
-      res.end(output);
+      res.end(output.trimEnd());
     } catch (error) {
-      res.end(error.message);
+      res.end('Cannot load the database');
     }
   } else {
     res.end('Hello Holberton School!');
