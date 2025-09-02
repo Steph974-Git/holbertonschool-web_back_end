@@ -1,15 +1,3 @@
-/**
- * countStudents (version synchrone)
- * - Lit un fichier CSV synchroniquement.
- * - Affiche:
- *   Number of students: N
- *   Number of students in FIELD: X. List: a, b, c
- * - En cas d'erreur de lecture, jette: "Cannot load the database"
- *
- * Hypothèse: le CSV a une 1re ligne d'en-têtes, contient au moins les colonnes:
- *   firstname, ..., field
- */
-
 const fs = require('fs');
 
 function countStudents(path) {
