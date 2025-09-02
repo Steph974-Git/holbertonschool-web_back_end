@@ -1,37 +1,82 @@
+/**
+ * countStudents (version synchrone)
+ * - Lit un fichier CSV synchroniquement.
+ * - Affiche:
+ *   Number of students: N
+ *   Number of students in FIELD: X. List: a, b, c
+ * - En cas d'erreur de lecture, jette: "Cannot load the database"
+ *
+ * Hypothèse: le CSV a une 1re ligne d'en-têtes, contient au moins les colonnes:
+ *   firstname, ..., field
+ */
+
 const fs = require('fs');
 
 function countStudents(path) {
+  let raw;
   try {
-    const data = fs.readFileSync(path, 'utf8');
-    const lines = data.split('\n').slice(1).filter((line) => line !== '');
-
-    const students = lines
-      .map((line) => {
-        const parts = line.split(',');
-        // Utilise la méthode findIndex pour être robuste comme le code qui passe
-        const firstname = parts[0]?.trim();
-        const field = parts[parts.length - 1]?.trim();
-        return { firstname, field };
-      })
-      .filter((student) => student.firstname && student.field);
-
-    const studentsByField = {};
-    students.forEach(({ firstname, field }) => {
-      if (!studentsByField[field]) { 
-        studentsByField[field] = []; 
-      }
-      studentsByField[field].push(firstname);
-    });
-
-    console.log(`Number of students: ${students.length}`);
-
-    // Utilise Object.keys().sort() pour garantir l'ordre alphabétique
-    for (const fieldName of Object.keys(studentsByField).sort()) {
-      const listFirstnames = studentsByField[fieldName].join(', ');
-      console.log(`Number of students in ${fieldName}: ${studentsByField[fieldName].length}. List: ${listFirstnames}`);
-    }
-  } catch (error) {
+    // Lecture synchrone, texte UTF-8
+    raw = fs.readFileSync(path, 'utf8');
+  } catch (err) {
+    // Message d'erreur demandé explicitement par l'énoncé
     throw new Error('Cannot load the database');
+  }
+
+  // Nettoyage: découper en lignes, virer les lignes vides
+  const lines = String(raw)
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+
+  if (lines.length <= 1) {
+    // Il n'y a que l'en-tête ou rien: 0 étudiant
+    console.log('Number of students: 0');
+    return;
+  }
+
+  // La première ligne est l'en-tête
+  const header = lines[0].split(',');
+  const rows = lines.slice(1);
+
+  // Indices utiles: on cherche firstname et field de manière robuste
+  const idxFirstName = header.findIndex((h) => h.trim() === 'firstname');
+  const idxField = header.findIndex((h) => h.trim() === 'field');
+
+  if (idxFirstName === -1 || idxField === -1) {
+    // CSV invalide vis-à-vis de ce qu'on attend
+    console.log('Number of students: 0');
+    return;
+  }
+
+  // Agrégation par field
+  const groups = {}; // ex: { CS: ['Johann', 'Katie'], SWE: ['Guillaume'] }
+
+  for (const line of rows) {
+    // Un CSV propre doit avoir le même nombre de colonnes que l'entête
+    const cols = line.split(',');
+    if (cols.length !== header.length) {
+      // Ligne corrompue: on l'ignore poliment
+      continue;
+    }
+
+    const firstname = cols[idxFirstName].trim();
+    const field = cols[idxField].trim();
+
+    // Une ligne vide ou incomplète n'est pas un étudiant valide
+    if (!firstname || !field) continue;
+
+    if (!groups[field]) groups[field] = [];
+    groups[field].push(firstname);
+  }
+
+  // Total
+  const total = Object.values(groups).reduce((acc, list) => acc + list.length, 0);
+  console.log(`Number of students: ${total}`);
+
+  // Détail par field (ordre alphabétique pour stabilité)
+  for (const field of Object.keys(groups).sort()) {
+    const list = groups[field];
+    console.log(`Number of students in ${field}: ${list.length}. List: ${list.join(', ')}`);
   }
 }
 
