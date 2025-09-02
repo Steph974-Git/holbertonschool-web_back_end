@@ -3,31 +3,34 @@ const countStudents = require('./3-read_file_async');
 
 const dbPath = process.argv[2];
 
-const app = http.createServer(async (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  
+const app = http.createServer((req, res) => {
+  res.setHeader('Content-Type', 'text/plain');
+
   if (req.url === '/') {
     res.end('Hello Holberton School!');
   } else if (req.url === '/students') {
-    res.write('This is the list of our students\n');
-    
-    try {
-      const originalLog = console.log;
-      let output = '';
-      console.log = (message) => {
-        output += message + '\n';
-      };
-      
-      await countStudents(dbPath);
-      
-      console.log = originalLog;
-      
-      res.end(output.trimEnd());
-    } catch (error) {
-      res.end('Cannot load the database');
-    }
+    let responseText = 'This is the list of our students\n';
+
+    const originalLog = console.log;
+    let output = '';
+    console.log = (message) => {
+      output += message + '\n';
+    };
+
+    countStudents(dbPath)
+      .then(() => {
+        console.log = originalLog;
+        responseText += output.trimEnd();
+        res.end(responseText);
+      })
+      .catch((error) => {
+        console.log = originalLog;
+        responseText += 'Cannot load the database';
+        res.end(responseText);
+      });
   } else {
-    res.end('Hello Holberton School!');
+    res.statusCode = 404;
+    res.end('Not Found');
   }
 });
 
