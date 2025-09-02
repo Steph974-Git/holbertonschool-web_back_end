@@ -10,45 +10,35 @@
  *   firstname, ..., field
  */
 
-// 2-read_file.js
 const fs = require('fs');
 
 function countStudents(path) {
   try {
-    const raw = fs.readFileSync(path, 'utf8');
+    const data = fs.readFileSync(path, 'utf8');
+    const lines = data.split('\n').slice(1).filter((line) => line.trim() !== '');
 
-    // 1) lignes utiles (on vire l'en-tête et les lignes vides)
-    const rows = raw
-      .split('\n')
-      .slice(1)
-      .map((l) => l.trim())
-      .filter((l) => l !== '');
+    const students = lines
+      .map((line) => {
+        const parts = line.split(',');
+        return { firstname: parts[0]?.trim(), field: parts[3]?.trim() }; // Index fixe pour field
+      })
+      .filter((student) => student.firstname && student.field);
 
-    // 2) un seul passage: on construit { field: [firstnames] }
-    const byField = rows.reduce((acc, line) => {
-      const cols = line.split(',');
-      const firstname = cols[0]?.trim();
-      const field = cols[3]?.trim(); // index fixe pour field (exigence projet)
+    const studentsByField = {};
+    students.forEach(({ firstname, field }) => {
+      if (!studentsByField[field]) { studentsByField[field] = []; }
+      studentsByField[field].push(firstname);
+    });
 
-      if (!firstname || !field) return acc; // ignore lignes invalides
+    console.log(`Number of students: ${students.length}`);
 
-      if (!acc[field]) acc[field] = [];
-      acc[field].push(firstname);
-      return acc;
-    }, {});
+    // Tri alphabétique des champs pour garantir l'ordre
+    Object.keys(studentsByField).sort().forEach(fieldName => {
+      const listFirstnames = studentsByField[fieldName].join(', ');
+      console.log(`Number of students in ${fieldName}: ${studentsByField[fieldName].length}. List: ${listFirstnames}`);
+    });
 
-    // 3) total = somme des longueurs
-    const total = Object.values(byField).reduce((n, arr) => n + arr.length, 0);
-    console.log(`Number of students: ${total}`);
-
-    // 4) sortie par filière (tri pour stabilité)
-    for (const field of Object.keys(byField).sort()) {
-      const list = byField[field];
-      console.log(
-        `Number of students in ${field}: ${list.length}. List: ${list.join(', ')}`
-      );
-    }
-  } catch {
+  } catch (error) {
     throw new Error('Cannot load the database');
   }
 }
