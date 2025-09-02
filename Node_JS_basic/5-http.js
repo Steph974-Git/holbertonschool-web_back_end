@@ -3,29 +3,19 @@ const countStudents = require('./3-read_file_async');
 
 const dbPath = process.argv[2];
 
-const app = http.createServer(async (req, res) => {
+const app = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   
   if (req.url === '/') {
     res.end('Hello Holberton School!');
   } else if (req.url === '/students') {
-    res.write('This is the list of our students\n');
-    
-    try {
-      const originalLog = console.log;
-      let output = '';
-      console.log = (message) => {
-        output += message + '\n';
-      };
-      
-      await countStudents(dbPath);
-      
-      console.log = originalLog;
-      
-      res.end(output);
-    } catch (error) {
-      res.end(error.message);
-    }
+    countStudents(dbPath)
+      .then((result) => {
+        res.end(`This is the list of our students\n${result}`);
+      })
+      .catch((err) => {
+        res.end(`This is the list of our students\n${err.message}`);
+      });
   } else {
     res.end('Hello Holberton School!');
   }
