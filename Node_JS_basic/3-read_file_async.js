@@ -1,52 +1,58 @@
-// 3-read_file_async.js
+const { readFile } = require('fs').promises;
 
-// 1) importer soit fs.promises, soit fs
-fs.promises.readFile
-const { readFile } = require('fs').promises
+async function countStudents(path) {
+  let raw;
+  try {
+    raw = await readFile(path, 'utf8');
+  } catch (err) {
+    throw new Error('Cannot load the database');
+  }
 
-function countStudents(path) {
-  // 2) Retourner une Promise (directement si readFile promisifiée, sinon new Promise)
-  // return readFile(path, 'utf8')
-  //   .then((data) => {
-  //     // 3) transformer data -> lignes non vides
-  //     // const lines = ...
-  //     // const rows = ... (enlever l'en-tête)
-  //
-  //     // 4) agréger par field { field: [firstnames] }
-  //     // const groups = {}
-  //     // pour chaque row:
-  //     //   const cols = row.split(',')
-  //     //   const firstname = ...
-  //     //   const field = ...
-  //     //   si groups[field] n'existe pas -> l'initialiser []
-  //     //   pousser firstname
-  //
-  //     // 5) logger total
-  //     // console.log(`Number of students: ...`)
-  //
-  //     // 6) logger chaque field avec la liste join(', ')
-  //     // for (const f of ...) { console.log(...) }
-  //
-  //     // 7) optionnel: retourner quelque chose (ex: groups) pour tests internes
-  //     // return groups
-  //   })
-  //   .catch((err) => {
-  //     // 8) normaliser l'erreur demandée
-  //     throw new Error('Cannot load the database')
-  //   })
+  const lines = String(raw)
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
 
-  // Variante callback:
-  // return new Promise((resolve, reject) => {
-  //   fs.readFile(path, 'utf8', (err, data) => {
-  //     if (err) return reject(new Error('Cannot load the database'))
-  //     try {
-  //       // même parsing/agrégation/logs que ci-dessus
-  //       resolve(/* éventuellement une valeur */)
-  //     } catch (_) {
-  //       reject(new Error('Cannot load the database'))
-  //     }
-  //   })
-  // })
+  if (lines.length <= 1) {
+    console.log('Number of students: 0');
+    return;
+  }
+
+  const header = lines[0].split(',');
+  const rows = lines.slice(1);
+
+  const idxFirstName = header.findIndex((h) => h.trim() === 'firstname');
+  const idxField = header.findIndex((h) => h.trim() === 'field');
+
+  if (idxFirstName === -1 || idxField === -1) {
+    console.log('Number of students: 0');
+    return;
+  }
+
+  // Agrégation par field
+  const groups = {};
+
+  for (const row of rows) {
+    const cols = row.split(',');
+    const firstname = cols[idxFirstName] ? cols[idxFirstName].trim() : '';
+    const field = cols[idxField] ? cols[idxField].trim() : '';
+
+    // Une ligne vide ou incomplète n'est pas un étudiant valide
+    if (!firstname || !field) continue;
+
+    if (!groups[field]) groups[field] = [];
+    groups[field].push(firstname);
+  }
+
+  // Total
+  const total = Object.values(groups).reduce((acc, list) => acc + list.length, 0);
+  console.log(`Number of students: ${total}`);
+
+  // Détail par field (ordre alphabétique pour stabilité)
+  for (const field of Object.keys(groups).sort()) {
+    const list = groups[field];
+    console.log(`Number of students in ${field}: ${list.length}. List: ${list.join(', ')}`);
+  }
 }
 
-module.exports = countStudents
+module.exports = countStudents;
