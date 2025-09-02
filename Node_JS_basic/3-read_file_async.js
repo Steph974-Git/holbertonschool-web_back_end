@@ -1,52 +1,63 @@
-const { readFile } = require('fs').promises;
+const fs = require('fs').promises;
 
 async function countStudents(path) {
-  let raw;
   try {
-    raw = await readFile(path, 'utf8');
-
-    const lines = String(raw)
-      .split('\n')
-      .map((l) => l.trim())
-      .filter((l) => l.length > 0);
-
+    // 1. Lire le fichier CSV de manière asynchrone
+    const fileContent = await fs.readFile(path, 'utf8');
+    
+    // 2. Diviser en lignes et enlever les lignes vides
+    const lines = fileContent.split('\n').filter(line => line.trim() !== '');
+    
+    // 3. Vérifier s'il y a des données (au moins une ligne d'en-tête + des étudiants)
     if (lines.length <= 1) {
       console.log('Number of students: 0');
       return;
     }
-
-    const header = lines[0].split(',');
-    const rows = lines.slice(1);
-
-    const idxFirstName = header.findIndex((h) => h.trim() === 'firstname');
-    const idxField = header.findIndex((h) => h.trim() === 'field');
-
-    if (idxFirstName === -1 || idxField === -1) {
-      console.log('Number of students: 0');
-      return;
-    }
-
-    const groups = {};
-
-    for (const row of rows) {
-      const cols = row.split(',');
-      const firstname = cols[idxFirstName] ? cols[idxFirstName].trim() : '';
-      const field = cols[idxField] ? cols[idxField].trim() : '';
-
-      if (!firstname || !field) continue;
-
-      if (!groups[field]) groups[field] = [];
-      groups[field].push(firstname);
-    }
-
-    const total = Object.values(groups).reduce((acc, list) => acc + list.length, 0);
-    console.log(`Number of students: ${total}`);
-
-    for (const field of Object.keys(groups).sort()) {
-      const list = groups[field];
-      console.log(`Number of students in ${field}: ${list.length}. List: ${list.join(', ')}`);
-    }
-  } catch (err) {
+    
+    // 4. Séparer l'en-tête des données étudiants
+    const header = lines[0]; // Première ligne = en-tête
+    const studentLines = lines.slice(1); // Toutes les autres lignes = étudiants
+    
+    // 5. Créer un objet pour regrouper les étudiants par filière
+    const studentsByField = {}; // { CS: ['Johann', 'Katie'], SWE: ['Paul'] }
+    
+    // 6. Traiter chaque ligne d'étudiant
+    studentLines.forEach(line => {
+      const parts = line.split(','); // Séparer par virgules
+      
+      // Vérifier que la ligne a assez de données
+      if (parts.length < 4) return;
+      
+      const firstname = parts[0].trim(); // Premier nom
+      const field = parts[3].trim();     // Filière (4ème colonne)
+      
+      // Ignorer les lignes incomplètes
+      if (!firstname || !field) return;
+      
+      // Ajouter l'étudiant à sa filière
+      if (!studentsByField[field]) {
+        studentsByField[field] = []; // Créer la liste si elle n'existe pas
+      }
+      studentsByField[field].push(firstname);
+    });
+    
+    // 7. Calculer le nombre total d'étudiants
+    let totalStudents = 0;
+    Object.values(studentsByField).forEach(students => {
+      totalStudents += students.length;
+    });
+    console.log(`Number of students: ${totalStudents}`);
+    
+    // 8. Afficher les résultats par filière (ordre alphabétique)
+    const fields = Object.keys(studentsByField).sort(); // Trier les filières
+    fields.forEach(field => {
+      const students = studentsByField[field];
+      const studentList = students.join(', ');
+      console.log(`Number of students in ${field}: ${students.length}. List: ${studentList}`);
+    });
+    
+  } catch (error) {
+    // Si le fichier n'existe pas ou ne peut pas être lu
     throw new Error('Cannot load the database');
   }
 }
