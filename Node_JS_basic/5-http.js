@@ -11,20 +11,13 @@ const app = http.createServer((req, res) => {
   
   if (req.url === '/students') {
     const databasePath = process.argv[2];
-    const originalLog = console.log;
-    let output = '';
-    console.log = (msg) => { output += `${msg}\n`; };
-
-    res.write('This is the list of our students\n');
 
     countStudents(databasePath)
-      .then(() => {
-        console.log = originalLog;
-        res.end(output.trim());
+      .then((result) => {
+        res.end(`This is the list of our students\n${result}`);
       })
       .catch(() => {
-        console.log = originalLog;
-        res.end('Cannot load the database');
+        res.end('This is the list of our students\nCannot load the database');
       });
     return;
   }
