@@ -20,21 +20,21 @@ async function countStudents(path) {
       studentsByField[field].push(firstname);
     });
 
-    // Affichage dans la console (pour 3-main_1.js)
+    // Affichage dans la console (pour 3-main_1.js) - ORDRE ALPHABÉTIQUE
     console.log(`Number of students: ${students.length}`);
 
-    for (const fieldName in studentsByField) {
+    Object.keys(studentsByField).sort().forEach(fieldName => {
       const names = studentsByField[fieldName].join(', ');
       console.log(`Number of students in ${fieldName}: ${studentsByField[fieldName].length}. List: ${names}`);
-    }
+    });
 
-    // Construction du résultat pour le retour (pour 5-http.js)
+    // Construction du résultat pour le retour (pour 5-http.js) - ORDRE ALPHABÉTIQUE
     let result = `Number of students: ${students.length}`;
 
-    for (const fieldName in studentsByField) {
+    Object.keys(studentsByField).sort().forEach(fieldName => {
       const names = studentsByField[fieldName].join(', ');
       result += `\nNumber of students in ${fieldName}: ${studentsByField[fieldName].length}. List: ${names}`;
-    }
+    });
 
     return result;
 
