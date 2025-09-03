@@ -18,9 +18,6 @@ const app = http.createServer(async (req, res) => {
     } else {
       res.end('This is the list of our students\nCannot load the database');
     }
-  } else {
-    // Cas par défaut : toute autre URL
-    res.end('Hello Holberton School!');
   }
 });
 

@@ -2,36 +2,42 @@ const fs = require('fs').promises;
 
 async function countStudents(path) {
   try {
-    const data = await fs.readFile(path, 'utf-8');
+    const data = await fs.readFile(path, 'utf8');
+    const lines = data.split('\n').slice(1).filter((line) => line.trim() !== '');
 
-    const lines = data.split('\n').filter((line) => line.trim() !== '');
+    const students = lines
+      .map((line) => {
+        const parts = line.split(',');
+        return { firstname: parts[0], field: parts[parts.length - 1] };
+      })
+      .filter((student) => student.firstname && student.field);
 
-    const students = lines.slice(1);
-
-    let result = (`Number of students: ${students.length}\n`);
-
-    const fieldGroups = {};
-
-    students.forEach((student) => {
-      const fields = student.split(',');
-      const firstName = fields[0];
-      const field = fields[3];
-
-      if (!fieldGroups[field]) {
-        fieldGroups[field] = [];
+    const studentsByField = {};
+    students.forEach(({ firstname, field }) => {
+      if (!studentsByField[field]) {
+        studentsByField[field] = [];
       }
-      fieldGroups[field].push(firstName);
+      studentsByField[field].push(firstname);
     });
 
-    for (const field in fieldGroups) {
-      if (Object.prototype.hasOwnProperty.call(fieldGroups, field)) {
-        const studentsList = fieldGroups[field].join(', ');
-        result += (`Number of students in ${field}: ${fieldGroups[field].length}. List: ${studentsList}\n`);
-      }
+    // Affichage dans la console (pour 3-main_1.js)
+    console.log(`Number of students: ${students.length}`);
+
+    for (const fieldName in studentsByField) {
+      const names = studentsByField[fieldName].join(', ');
+      console.log(`Number of students in ${fieldName}: ${studentsByField[fieldName].length}. List: ${names}`);
     }
 
-    result = result.trim();
+    // Construction du résultat pour le retour (pour 5-http.js)
+    let result = `Number of students: ${students.length}`;
+
+    for (const fieldName in studentsByField) {
+      const names = studentsByField[fieldName].join(', ');
+      result += `\nNumber of students in ${fieldName}: ${studentsByField[fieldName].length}. List: ${names}`;
+    }
+
     return result;
+
   } catch (error) {
     throw new Error('Cannot load the database');
   }
