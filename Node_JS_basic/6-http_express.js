@@ -8,3 +8,5 @@ app.get('/', (req, res) => {
 app.listen(1245, () => {
   console.log('Serveur lancé sur http://localhost:1245');
 });
+
+module.exports = app;
