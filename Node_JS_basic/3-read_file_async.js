@@ -1,72 +1,44 @@
-// 3-read_file_async.js
 const fs = require('fs').promises;
 
 async function countStudents(path) {
   try {
     const data = await fs.readFile(path, 'utf8');
+    const lines = data.split('\n').slice(1).filter((line) => line.trim() !== '');
 
-    const lines = String(data)
-      .split('\n')
-      .map((l) => l.trim())
-      .filter((l) => l.length > 0);
+    const students = lines
+      .map((line) => {
+        const parts = line.split(',');
+        return { firstname: parts[0], field: parts[parts.length - 1] };
+      })
+      .filter((student) => student.firstname && student.field);
 
-    if (lines.length <= 1) {
-      // seulement l'en-tête ou rien
-      console.log('Number of students: 0');
-      return 'Number of students: 0';
-    }
+    const studentsByField = {};
+    students.forEach(({ firstname, field }) => {
+      if (!studentsByField[field]) {
+        studentsByField[field] = [];
+      }
+      studentsByField[field].push(firstname);
+    });
 
-    const header = lines[0].split(',').map((h) => h.trim());
-    const rows = lines.slice(1);
-
-    const idxFirst = header.findIndex((h) => h.toLowerCase() === 'firstname');
-    const idxField = header.findIndex((h) => h.toLowerCase() === 'field');
-
-    // En cas d'entête foireuse, on considère 0 étudiant
-    if (idxFirst === -1 || idxField === -1) {
-      console.log('Number of students: 0');
-      return 'Number of students: 0';
-    }
-
-    // parse étudiants
-    const students = rows
-      .map((row) => row.split(',').map((c) => c.trim()))
-      .filter((cols) => cols.length > Math.max(idxFirst, idxField))
-      .map((cols) => ({ firstname: cols[idxFirst], field: cols[idxField] }))
-      .filter((s) => s.firstname && s.field);
-
-    // group by field
-    const byField = {};
-    for (const { firstname, field } of students) {
-      if (!byField[field]) byField[field] = [];
-      byField[field].push(firstname);
-    }
-
-    // logs console requis par l’énoncé
+    // Affichage dans la console (pour 3-main_1.js)
     console.log(`Number of students: ${students.length}`);
 
-    // ordre stable: d’abord CS puis SWE si présents, puis le reste trié
-    const preferred = ['CS', 'SWE'];
-    const others = Object.keys(byField)
-      .filter((f) => !preferred.includes(f))
-      .sort();
-
-    const orderedFields = [...preferred.filter((f) => byField[f]), ...others];
-
-    for (const f of orderedFields) {
-      console.log(
-        `Number of students in ${f}: ${byField[f].length}. List: ${byField[f].join(', ')}`
-      );
+    for (const fieldName in studentsByField) {
+      const names = studentsByField[fieldName].join(', ');
+      console.log(`Number of students in ${fieldName}: ${studentsByField[fieldName].length}. List: ${names}`);
     }
 
-    // retourne aussi une chaîne exploitable par 5-http.js
+    // Construction du résultat pour le retour (pour 5-http.js)
     let result = `Number of students: ${students.length}`;
-    for (const f of orderedFields) {
-      result += `\nNumber of students in ${f}: ${byField[f].length}. List: ${byField[f].join(', ')}`;
+
+    for (const fieldName in studentsByField) {
+      const names = studentsByField[fieldName].join(', ');
+      result += `\nNumber of students in ${fieldName}: ${studentsByField[fieldName].length}. List: ${names}`;
     }
+
     return result;
-  } catch {
-    // message exact exigé
+
+  } catch (error) {
     throw new Error('Cannot load the database');
   }
 }
