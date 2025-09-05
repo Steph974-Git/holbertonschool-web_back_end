@@ -18,7 +18,7 @@ class StudentsController {
       
       res.status(200).send(response.trim());
       
-    } catch (error) {
+    } catch (err) {
       res.status(500).send('Cannot load the database');
     }
   }
@@ -28,7 +28,8 @@ class StudentsController {
     const filePath = process.argv[2];
 
     if (major !== 'CS' && major !== 'SWE') {
-      return res.status(500).send('Major parameter must be CS or SWE');
+      res.status(500).send('Major parameter must be CS or SWE');
+      return;
     }
 
     try {
@@ -38,7 +39,7 @@ class StudentsController {
       const response = `List: ${selectedStudents.join(', ')}`;
       res.status(200).send(response);
       
-    } catch (error) {
+    } catch (err) {
       res.status(500).send('Cannot load the database');
     }
   }
