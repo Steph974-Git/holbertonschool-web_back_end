@@ -1,6 +1,6 @@
-const { readDatabase } = require('../utils');
+import { readDatabase } from '../utils.js';
 
-class StudentsController {
+export default class StudentsController {
   static async getAllStudents(req, res) {
     const filePath = process.argv[2];
     
@@ -18,7 +18,7 @@ class StudentsController {
       
       res.status(200).send(response.trim());
       
-    } catch (err) {
+    } catch (error) {
       res.status(500).send('Cannot load the database');
     }
   }
@@ -28,8 +28,7 @@ class StudentsController {
     const filePath = process.argv[2];
 
     if (major !== 'CS' && major !== 'SWE') {
-      res.status(500).send('Major parameter must be CS or SWE');
-      return;
+      return res.status(500).send('Major parameter must be CS or SWE');
     }
 
     try {
@@ -39,10 +38,8 @@ class StudentsController {
       const response = `List: ${selectedStudents.join(', ')}`;
       res.status(200).send(response);
       
-    } catch (err) {
+    } catch (error) {
       res.status(500).send('Cannot load the database');
     }
   }
 }
-
-module.exports = StudentsController;

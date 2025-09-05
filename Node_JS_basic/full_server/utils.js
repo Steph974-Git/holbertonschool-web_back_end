@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 function readDatabase(path) {
   return new Promise((resolve, reject) => {
@@ -25,7 +25,7 @@ function readDatabase(path) {
           });
 
           resolve(students);
-        } catch (parseErr) {
+        } catch (parseError) {
           reject(new Error('Cannot load the database'));
         }
       }
@@ -33,4 +33,4 @@ function readDatabase(path) {
   });
 }
 
-module.exports = { readDatabase };
+export { readDatabase };

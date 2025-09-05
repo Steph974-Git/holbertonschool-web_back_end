@@ -1,6 +1,5 @@
-/* eslint-env node */
-const express = require('express');
-const router = require('./routes/index');
+import express from 'express';
+import router from './routes/index.js';
 
 const app = express();
 
@@ -10,4 +9,4 @@ app.listen(1245, () => {
   console.log('Server running on port 1245');
 });
 
-module.exports = app;
+export default app;
