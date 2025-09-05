@@ -25,7 +25,7 @@ function readDatabase(path) {
           });
 
           resolve(students);
-        } catch (parseError) {
+        } catch {
           reject(new Error('Cannot load the database'));
         }
       }

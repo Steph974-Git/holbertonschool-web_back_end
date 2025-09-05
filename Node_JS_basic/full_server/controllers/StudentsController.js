@@ -1,4 +1,4 @@
-import { readDatabase } from '../utils';
+import readDatabase from '../utils';
 
 export default class StudentsController {
   static async getAllStudents(req, res) {
@@ -11,20 +11,20 @@ export default class StudentsController {
 
       const fields = Object.keys(students).sort();
 
-      fields.forEach(field => {
+      fields.forEach((field) => {
         const studentList = students[field].join(', ');
         response += `Number of students in ${field}: ${students[field].length}. List: ${studentList}\n`;
       });
       
-      res.status(200).send(response.trim());
+      return res.status(200).send(response.trim());
       
-    } catch (error) {
-      res.status(500).send('Cannot load the database');
+    } catch {
+      return res.status(500).send('Cannot load the database');
     }
   }
 
   static async getAllStudentsByMajor(req, res) {
-    const major = req.params.major;
+    const { major } = req.params;
     const filePath = process.argv[2];
 
     if (major !== 'CS' && major !== 'SWE') {
@@ -36,10 +36,10 @@ export default class StudentsController {
       const selectedStudents = students[major] || [];
       
       const response = `List: ${selectedStudents.join(', ')}`;
-      res.status(200).send(response);
+      return res.status(200).send(response);
       
-    } catch (error) {
-      res.status(500).send('Cannot load the database');
+    } catch {
+      return res.status(500).send('Cannot load the database');
     }
   }
 }
