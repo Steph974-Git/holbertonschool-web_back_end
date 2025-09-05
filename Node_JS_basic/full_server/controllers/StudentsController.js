@@ -9,7 +9,7 @@ export default class StudentsController {
 
       let response = 'This is the list of our students\n';
 
-      const fields = Object.keys(students).sort(); // Ajout de "const"
+      const fields = Object.keys(students).sort();
 
       fields.forEach(field => {
         const studentList = students[field].join(', ');
@@ -18,25 +18,23 @@ export default class StudentsController {
       
       res.status(200).send(response.trim());
       
-    } catch (error) { // Correction de l'indentation
+    } catch (error) {
       res.status(500).send('Cannot load the database');
     }
   }
 
   static async getAllStudentsByMajor(req, res) {
     const major = req.params.major;
-    const filePath = process.argv[2]; // Ajout de cette ligne
+    const filePath = process.argv[2];
 
-    // Correction de la condition : si ce N'EST PAS CS ou SWE
     if (major !== 'CS' && major !== 'SWE') {
       return res.status(500).send("Major parameter must be CS or SWE");
     }
 
     try {
       const students = await readDatabase(filePath);
-      const selectedStudents = students[major] || []; // Protection si pas d'étudiants
+      const selectedStudents = students[major] || [];
       
-      // Format demandé : "List: firstname1, firstname2, firstname3"
       const response = `List: ${selectedStudents.join(', ')}`;
       res.status(200).send(response);
       
