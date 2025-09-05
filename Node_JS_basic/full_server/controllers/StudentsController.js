@@ -1,6 +1,6 @@
-import { readDatabase } from '../utils.js';
+const { readDatabase } = require('../utils');
 
-export default class StudentsController {
+class StudentsController {
   static async getAllStudents(req, res) {
     const filePath = process.argv[2];
     
@@ -28,7 +28,7 @@ export default class StudentsController {
     const filePath = process.argv[2];
 
     if (major !== 'CS' && major !== 'SWE') {
-      return res.status(500).send("Major parameter must be CS or SWE");
+      return res.status(500).send('Major parameter must be CS or SWE');
     }
 
     try {
@@ -43,3 +43,5 @@ export default class StudentsController {
     }
   }
 }
+
+module.exports = StudentsController;
