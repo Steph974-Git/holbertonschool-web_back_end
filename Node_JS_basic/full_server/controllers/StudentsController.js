@@ -12,7 +12,7 @@ class StudentsController {
 
         for (const field of fields) {
           const students = studentsByField[field];
-          response.write(`Number of students in ${field}: ${students.length}. List: ${students.join(', ')}`);
+          response.write(`Number of students in ${field}: ${students.length}. List: ${students.join(', ')}\n`);
         }
         response.end();
       })
