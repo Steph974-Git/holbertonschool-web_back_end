@@ -7,7 +7,7 @@
     "lint": "eslint *.js",
     "check-lint": "lint [0-9]*.js",
     "test": "mocha --require babel-register --exit *.test.js",
-    "dev": "nodemon --exec babel-node --presets babel-preset-env ./server.js ./database.csv",
+    "dev": "nodemon --exec babel-node ./full_server/server.js ./database.csv",
     "full-test": "npm run lint && npm run test"
   },
   "author": "",
