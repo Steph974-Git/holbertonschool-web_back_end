@@ -33,4 +33,4 @@ function readDatabase(path) {
   });
 }
 
-export { readDatabase };
+export default readDatabase;
